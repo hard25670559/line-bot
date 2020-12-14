@@ -26,7 +26,7 @@ function handleEvent(event) {
     type: event.type,
     mode: event.mode,
     timestamp: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
-  });
+  }).write();
   if (event.type !== 'message' || event.message.type !== 'text') {
     // ignore non-text-message event
     return Promise.resolve(null);
