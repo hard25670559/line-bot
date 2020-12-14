@@ -50,8 +50,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  console.log(db.get('users'));
-  res.json(db.get('users'));
+  res.json(db.get('messages'));
 });
 
 // listen on port
