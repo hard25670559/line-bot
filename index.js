@@ -2,6 +2,7 @@ const line = require('@line/bot-sdk');
 const express = require('express');
 const { format } = require('date-fns');
 const db = require('./database');
+require('dotenv').config();
 
 // const CHANNEL_ID = '1655375708';
 const CHANNEL_SECRET = '25865e7590b48d8537ea17e6a91572c6';
@@ -30,6 +31,12 @@ function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     // ignore non-text-message event
     return Promise.resolve(null);
+  }
+  switch (event.type) {
+    case 'message':
+      break;
+    default:
+      break;
   }
 
   // create a echoing text message
@@ -62,6 +69,11 @@ app.get('/messages', (req, res) => {
 
 app.get('/events', (req, res) => {
   res.json(db.get('events'));
+});
+
+app.get('/', (req, res) => {
+  console.log(process.env.TEST);
+  res.json(process.env);
 });
 
 // listen on port
