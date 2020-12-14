@@ -5,8 +5,8 @@ const db = require('./database');
 require('dotenv').config();
 
 // const CHANNEL_ID = '1655375708';
-const CHANNEL_SECRET = '25865e7590b48d8537ea17e6a91572c6';
-const CHANNEL_ACCESS_TOKEN = 'hb1UpOscBOVIdHH4nri1WFvM4PZ++wjEWo0l42eXLoJJRtIqC5yUSRkcDuerA2nkR4zBVP8MTFWLIs0yHJ1PrukyfVHnU7n9+tjn3rjDvdHtFtf5GAKN0FoW8ywTjdJDlPzt7IAOR/BREXKDpUHejAdB04t89/1O/w1cDnyilFU=';
+const { CHANNEL_SECRET } = process.env;
+const { CHANNEL_ACCESS_TOKEN } = process.env;
 
 // create LINE SDK config from env variables
 const config = {
