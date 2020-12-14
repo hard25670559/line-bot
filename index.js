@@ -1,5 +1,6 @@
 const line = require('@line/bot-sdk');
 const express = require('express');
+const { format } = require('date-fns');
 const db = require('./database');
 
 // const CHANNEL_ID = '1655375708';
@@ -21,6 +22,11 @@ const app = express();
 
 // event handler
 function handleEvent(event) {
+  db.get('events').push({
+    type: event.type,
+    mode: event.mode,
+    timestamp: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
+  });
   if (event.type !== 'message' || event.message.type !== 'text') {
     // ignore non-text-message event
     return Promise.resolve(null);
@@ -50,8 +56,12 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
+app.get('/messages', (req, res) => {
   res.json(db.get('messages'));
+});
+
+app.get('/events', (req, res) => {
+  res.json(db.get('events'));
 });
 
 // listen on port
