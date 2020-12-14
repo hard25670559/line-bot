@@ -1,7 +1,6 @@
-'use strict';
-
 const line = require('@line/bot-sdk');
 const express = require('express');
+const db = require('./database');
 
 // const CHANNEL_ID = '1655375708';
 const CHANNEL_SECRET = '25865e7590b48d8537ea17e6a91572c6';
@@ -20,6 +19,24 @@ const client = new line.Client(config);
 // about Express itself: https://expressjs.com/
 const app = express();
 
+// event handler
+function handleEvent(event) {
+  if (event.type !== 'message' || event.message.type !== 'text') {
+    // ignore non-text-message event
+    return Promise.resolve(null);
+  }
+
+  // create a echoing text message
+  const echo = { type: 'text', text: event.message.text };
+  db.get('messages').push({
+    ...event.message,
+    token: event.replyToken,
+  }).write();
+
+  // use reply API
+  return client.replyMessage(event.replyToken, echo);
+}
+
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), (req, res) => {
@@ -32,27 +49,10 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-app.get('/send', (req, res) => {
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
-
-  // use reply API
-  return client.replyMessage(event.replyToken, echo);
-})
-
-// event handler
-function handleEvent(event) {
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    // ignore non-text-message event
-    return Promise.resolve(null);
-  }
-
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
-
-  // use reply API
-  return client.replyMessage(event.replyToken, echo);
-}
+app.get('/', (req, res) => {
+  console.log(db.get('users'));
+  res.json(db.get('users'));
+});
 
 // listen on port
 const port = process.env.PORT || 3000;
