@@ -31,6 +31,7 @@ function handleEvent(event) {
   db.get('messages').push({
     ...event.message,
     token: event.replyToken,
+    source: event.source,
   }).write();
 
   // use reply API
