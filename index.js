@@ -56,7 +56,7 @@ function handleEvent(event) {
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
-app.post('/callback', line.middleware(config), (req, res) => {
+app.post('/callback', line.middleware(config), async (req, res) => {
   db.get('events')
     .push(req.body.events)
     .write();
