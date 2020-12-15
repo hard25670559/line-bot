@@ -23,14 +23,6 @@ const app = express();
 
 // event handler
 function handleEvent(event) {
-  db.get('events')
-    .push({
-      type: event.type,
-      mode: event.mode,
-      timestamp: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
-    })
-    .write();
-
   // create a echoing text message
   let defMassage = { type: 'text', text: '我機器人，跨模辣!' };
   let active;
@@ -65,10 +57,10 @@ function handleEvent(event) {
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), (req, res) => {
-  db.get('count').push({
-    count: req.body.events.length,
-    timestamp: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-  }).write();
+  db.get('events')
+    .push(req.body.events)
+    .write();
+
   Promise
     .all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
