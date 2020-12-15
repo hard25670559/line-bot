@@ -149,13 +149,24 @@ app.get('/', (req, res) => {
   res.json(process.env);
 });
 app.get('/send', async (req, res) => {
-  const result = await client
-    .pushMessage(req.query.userId
-      ? req.query.userId : 'U6b133b78a90a1731a89e122fcc35d5e5', {
-      type: 'text',
-      text: req.query.message ? req.query.message : '安安',
-    });
-  res.json(result);
+  try {
+    const result = await client
+      .pushMessage(req.query.userId
+        ? req.query.userId : 'U6b133b78a90a1731a89e122fcc35d5e5', {
+        type: 'text',
+        text: req.query.message ? req.query.message : '安安',
+      });
+    res.json(result);
+  } catch (err) {
+    db.get('errors')
+      .push({
+        where: 'get/send',
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
+    res.status(500).end();
+  }
 });
 
 // listen on port
