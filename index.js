@@ -1,6 +1,7 @@
 const line = require('@line/bot-sdk');
 const express = require('express');
 const { format } = require('date-fns');
+const { text } = require('body-parser');
 const db = require('./database');
 require('dotenv').config();
 
@@ -21,39 +22,42 @@ const client = new line.Client(config);
 // about Express itself: https://expressjs.com/
 const app = express();
 
+async function onFollow(event) {
+  const defMassage = { type: 'text', text: '夜露死苦' };
+  const active = await client.replyMessage(event.replyToken, defMassage);
+  const userId = event.source;
+  const profile = await client.getProfile(userId);
+  db.get('users').push(profile).write();
+  return active;
+}
+
+async function onMessage(event) {
+  const replyMessage = { type: 'text', text: '我機器人，跨模辣!' };
+  if (event.message.type === 'text') {
+    replyMessage.text = event.message.text;
+  }
+  const active = await client.replyMessage(event.replyToken, replyMessage);
+  db.get('messages').push({
+    ...event.message,
+    token: event.replyToken,
+    source: event.source,
+    time: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
+  }).write();
+
+  return active;
+}
+
 // event handler
 async function handleEvent(event) {
-  // create a echoing text message
-  let defMassage = { type: 'text', text: '我機器人，跨模辣!' };
-  let active;
-  let userId;
-  let profile;
-  switch (event.type) {
-    case 'follow':
-      defMassage = { type: 'text', text: '夜露死苦' };
-      active = await client.replyMessage(event.replyToken, defMassage);
-      userId = event.source;
-      profile = await client.getProfile(userId);
-      db.get('users').push(profile).write();
-      break;
-    case 'message':
-      if (event.message.type === 'text') {
-        defMassage = { type: 'text', text: event.message.text };
-        active = await client.replyMessage(event.replyToken, defMassage);
-        db.get('messages').push({
-          ...event.message,
-          token: event.replyToken,
-          source: event.source,
-        }).write();
-      } else {
-        active = await client.replyMessage(event.replyToken, defMassage);
-      }
-      break;
-    default:
-      active = await client.replyMessage(event.replyToken, defMassage);
-      break;
+  let active = Promise.resolve(null);
+  try {
+    active = {
+      follow: onFollow,
+      message: onMessage,
+    }(event.type)(event);
+  } catch (err) {
+    active = Promise.resolve(null);
   }
-
   return active;
 }
 
