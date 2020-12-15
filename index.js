@@ -76,11 +76,11 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
-app.get('users', (req, res) => {
+app.get('/users', (req, res) => {
   res.json(db.get('users'));
 })
 
-app.get('count', (req, res) => {
+app.get('/count', (req, res) => {
   res.json(db.get('count'));
 })
 
