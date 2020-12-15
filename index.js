@@ -66,7 +66,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
   db.get('count').push({
     count: req.body.events.length,
     timestamp: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-  })
+  }).write();
   Promise
     .all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
