@@ -22,32 +22,35 @@ const client = new line.Client(config);
 const app = express();
 
 // event handler
-function handleEvent(event) {
+async function handleEvent(event) {
   // create a echoing text message
   let defMassage = { type: 'text', text: '我機器人，跨模辣!' };
   let active;
-
+  let userId;
+  let profile;
   switch (event.type) {
     case 'follow':
-        defMassage = { type: 'text', text: '夜露死苦' };
-        active = client.replyMessage(event.replyToken, defMassage);
-        const userId = event.source.userId;
+      defMassage = { type: 'text', text: '夜露死苦' };
+      active = await client.replyMessage(event.replyToken, defMassage);
+      userId = event.source;
+      profile = await client.getProfile(userId);
+      db.get('users').push(profile).write();
       break;
     case 'message':
       if (event.message.type === 'text') {
         defMassage = { type: 'text', text: event.message.text };
-        active = client.replyMessage(event.replyToken, defMassage);
+        active = await client.replyMessage(event.replyToken, defMassage);
         db.get('messages').push({
           ...event.message,
           token: event.replyToken,
           source: event.source,
         }).write();
       } else {
-        active = client.replyMessage(event.replyToken, defMassage);
+        active = await client.replyMessage(event.replyToken, defMassage);
       }
       break;
     default:
-      active = client.replyMessage(event.replyToken, defMassage);
+      active = await client.replyMessage(event.replyToken, defMassage);
       break;
   }
 
@@ -64,44 +67,39 @@ app.post('/callback', line.middleware(config), async (req, res) => {
   try {
     const result = await Promise.all(req.body.events.map(handleEvent));
     res.json(result);
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     res.status(500).end();
   }
-
-  // Promise
-  //   .all(req.body.events.map(handleEvent))
-  //   .then((result) => res.json(result))
-  //   .catch((err) => {
-  //     console.error(err);
-  //     res.status(500).end();
-  //   });
 });
 
 app.get('/data', (req, res) => {
   res.json(db);
-})
-
+});
 app.get('/users', (req, res) => {
   res.json(db.get('users'));
-})
-
-app.get('/count', (req, res) => {
-  res.json(db.get('count'));
-})
-
+});
 app.get('/messages', (req, res) => {
   res.json(db.get('messages'));
 });
-
 app.get('/events', (req, res) => {
   res.json(db.get('events'));
 });
+app.get('/count', (req, res) => {
+  res.json(db.get('count'));
+});
+app.get('/resp', (req, res) => {
+  res.json(db.get('resp'));
+});
+app.get('/test', (req, res) => {
+  const cols = db.map((value, name) => name);
+  res.json(cols);
+});
 
 app.get('/', (req, res) => {
-  console.log(process.env.TEST);
   res.json(process.env);
 });
+
 // listen on port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
