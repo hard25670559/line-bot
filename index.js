@@ -75,10 +75,16 @@ async function onMessage(event) {
 async function handleEvent(event) {
   let active = Promise.resolve(null);
   try {
-    active = {
-      follow: onFollow,
-      message: onMessage,
-    }(event.type)(event);
+    switch (event.type) {
+      case 'follow':
+        onFollow(event);
+        break;
+      case 'message':
+        onMessage(event);
+        break;
+      default:
+        break;
+    }
   } catch (err) {
     active = Promise.resolve(null);
     db.get('errors')
