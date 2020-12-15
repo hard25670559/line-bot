@@ -50,6 +50,8 @@ function handleEvent(event) {
           token: event.replyToken,
           source: event.source,
         }).write();
+      } else {
+        active = client.replyMessage(event.replyToken, defMassage);
       }
       break;
     default:
