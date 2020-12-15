@@ -101,7 +101,7 @@ async function handleEvent(event) {
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), async (req, res) => {
   db.get('events')
-    .push(req.body.events)
+    .push(req)
     .write();
 
   try {
@@ -148,6 +148,7 @@ app.get('/test', (req, res) => {
 app.get('/', (req, res) => {
   res.json(process.env);
 });
+
 app.get('/send', async (req, res) => {
   try {
     const result = await client
