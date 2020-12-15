@@ -100,9 +100,22 @@ async function handleEvent(event) {
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), async (req, res) => {
-  db.get('events')
-    .push(req)
-    .write();
+  try {
+    db.get('events')
+      .push({
+        headers: req.headers,
+        body: req.body,
+      })
+      .write();
+  } catch (err) {
+    db.get('errors')
+      .push({
+        where: 'post/callback.write request',
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
+  }
 
   try {
     const result = await Promise.all(req.body.events.map(handleEvent));
