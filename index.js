@@ -33,7 +33,7 @@ function handleEvent(event) {
 
   // create a echoing text message
   let defMassage = { type: 'text', text: '我機器人，跨模辣!' };
-  const active = client.replyMessage(event.replyToken, defMassage);
+  let active;
 
   switch (event.type) {
     case 'follow':
@@ -41,6 +41,7 @@ function handleEvent(event) {
     case 'message':
       if (event.message.type === 'text') {
         defMassage = { type: 'text', text: event.message.text };
+        active = client.replyMessage(event.replyToken, defMassage);
       }
       break;
     default:
@@ -81,7 +82,6 @@ app.get('/', (req, res) => {
   console.log(process.env.TEST);
   res.json(process.env);
 });
-
 // listen on port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
