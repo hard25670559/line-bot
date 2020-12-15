@@ -23,26 +23,50 @@ const client = new line.Client(config);
 const app = express();
 
 async function onFollow(event) {
-  const defMassage = { type: 'text', text: '夜露死苦' };
-  const active = await client.replyMessage(event.replyToken, defMassage);
-  const userId = event.source;
-  const profile = await client.getProfile(userId);
-  db.get('users').push(profile).write();
+  let active;
+  try {
+    const defMassage = { type: 'text', text: '夜露死苦' };
+    active = await client.replyMessage(event.replyToken, defMassage);
+    const userId = event.source;
+    const profile = await client.getProfile(userId);
+    db.get('users').push(profile).write();
+  } catch (err) {
+    db.get('errors')
+      .push({
+        where: 'onFollow',
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
+    active = Promise.resolve(null);
+  }
   return active;
 }
 
 async function onMessage(event) {
-  const replyMessage = { type: 'text', text: '我機器人，跨模辣!' };
-  if (event.message.type === 'text') {
-    replyMessage.text = event.message.text;
+  let active;
+  try {
+    const replyMessage = { type: 'text', text: '我機器人，跨模辣!' };
+    if (event.message.type === 'text') {
+      replyMessage.text = event.message.text;
+    }
+    active = await client.replyMessage(event.replyToken, replyMessage);
+    db.get('messages').push({
+      ...event.message,
+      token: event.replyToken,
+      source: event.source,
+      time: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
+    }).write();
+  } catch (err) {
+    db.get('errors')
+      .push({
+        where: 'onMessage',
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
+    active = Promise.resolve(null);
   }
-  const active = await client.replyMessage(event.replyToken, replyMessage);
-  db.get('messages').push({
-    ...event.message,
-    token: event.replyToken,
-    source: event.source,
-    time: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
-  }).write();
 
   return active;
 }
