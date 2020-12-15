@@ -27,7 +27,7 @@ async function onFollow(event) {
   try {
     const defMassage = { type: 'text', text: '夜露死苦' };
     active = await client.replyMessage(event.replyToken, defMassage);
-    const userId = event.source;
+    const { userId } = event.source;
     const profile = await client.getProfile(userId);
     db.get('users').push(profile).write();
   } catch (err) {
