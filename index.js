@@ -61,13 +61,21 @@ app.post('/callback', line.middleware(config), (req, res) => {
     .push(req.body.events)
     .write();
 
-  Promise
-    .all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result))
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
+  try {
+    const result = await Promise.all(req.body.events.map(handleEvent));
+    res.json(result);
+  } catch(err) {
+    console.error(err);
+    res.status(500).end();
+  }
+
+  // Promise
+  //   .all(req.body.events.map(handleEvent))
+  //   .then((result) => res.json(result))
+  //   .catch((err) => {
+  //     console.error(err);
+  //     res.status(500).end();
+  //   });
 });
 
 app.get('/data', (req, res) => {
