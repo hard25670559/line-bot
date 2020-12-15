@@ -37,6 +37,8 @@ function handleEvent(event) {
 
   switch (event.type) {
     case 'follow':
+        defMassage = { type: 'text', text: '夜露死苦' };
+        active = client.replyMessage(event.replyToken, defMassage);
       break;
     case 'message':
       if (event.message.type === 'text') {
