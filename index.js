@@ -78,6 +78,10 @@ app.post('/callback', line.middleware(config), (req, res) => {
     });
 });
 
+app.get('/data', (req, res) => {
+  res.json(db);
+})
+
 app.get('/users', (req, res) => {
   res.json(db.get('users'));
 })
