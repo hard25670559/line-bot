@@ -23,24 +23,30 @@ const app = express();
 
 // event handler
 function handleEvent(event) {
-  db.get('events').push({
-    type: event.type,
-    mode: event.mode,
-    timestamp: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
-  }).write();
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    // ignore non-text-message event
-    return Promise.resolve(null);
-  }
+  db.get('events')
+    .push({
+      type: event.type,
+      mode: event.mode,
+      timestamp: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
+    })
+    .write();
+
+  // create a echoing text message
+  let defMassage = { type: 'text', text: '我機器人，跨模辣!' };
+  const active = client.replyMessage(event.replyToken, defMassage);
+
   switch (event.type) {
+    case 'follow':
+      break;
     case 'message':
+      if (event.message.type === 'text') {
+        defMassage = { type: 'text', text: event.message.text };
+      }
       break;
     default:
       break;
   }
 
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
   db.get('messages').push({
     ...event.message,
     token: event.replyToken,
@@ -48,7 +54,7 @@ function handleEvent(event) {
   }).write();
 
   // use reply API
-  return client.replyMessage(event.replyToken, echo);
+  return active;
 }
 
 // register a webhook handler with middleware
