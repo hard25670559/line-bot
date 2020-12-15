@@ -1,9 +1,8 @@
 {
-  "users": [
-  ],
-  "messages": [
-  ],
+  "users": [],
+  "messages": [],
   "events": [],
   "count": [],
-  "resp": []
+  "resp": [],
+  "errors": []
 }

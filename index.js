@@ -57,6 +57,12 @@ async function handleEvent(event) {
     }(event.type)(event);
   } catch (err) {
     active = Promise.resolve(null);
+    db.get('errors')
+      .push({
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
   }
   return active;
 }
@@ -72,7 +78,12 @@ app.post('/callback', line.middleware(config), async (req, res) => {
     const result = await Promise.all(req.body.events.map(handleEvent));
     res.json(result);
   } catch (err) {
-    console.error(err);
+    db.get('errors')
+      .push({
+        err,
+        time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      })
+      .write();
     res.status(500).end();
   }
 });
@@ -94,6 +105,9 @@ app.get('/count', (req, res) => {
 });
 app.get('/resp', (req, res) => {
   res.json(db.get('resp'));
+});
+app.get('/errors', (req, res) => {
+  res.json(db.get('errors'));
 });
 app.get('/test', (req, res) => {
   const cols = db.map((value, name) => name);
