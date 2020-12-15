@@ -1,7 +1,6 @@
 const line = require('@line/bot-sdk');
 const express = require('express');
 const { format } = require('date-fns');
-const { text } = require('body-parser');
 const db = require('./database');
 require('dotenv').config();
 
@@ -150,10 +149,12 @@ app.get('/', (req, res) => {
   res.json(process.env);
 });
 app.get('/send', async (req, res) => {
-  const result = await client.pushMessage('U6b133b78a90a1731a89e122fcc35d5e5', {
-    type: 'text',
-    text: req.query.message ? req.query.message : '安安',
-  });
+  const result = await client
+    .pushMessage(req.query.userId
+      ? req.query.userId : 'U6b133b78a90a1731a89e122fcc35d5e5', {
+      type: 'text',
+      text: req.query.message ? req.query.message : '安安',
+    });
   res.json(result);
 });
 
