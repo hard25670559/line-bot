@@ -59,6 +59,7 @@ async function handleEvent(event) {
     active = Promise.resolve(null);
     db.get('errors')
       .push({
+        where: 'handleEvent',
         err,
         time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
       })
@@ -80,6 +81,7 @@ app.post('/callback', line.middleware(config), async (req, res) => {
   } catch (err) {
     db.get('errors')
       .push({
+        where: 'post/callback',
         err,
         time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
       })
