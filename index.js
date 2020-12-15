@@ -39,30 +39,34 @@ function handleEvent(event) {
     case 'follow':
         defMassage = { type: 'text', text: '夜露死苦' };
         active = client.replyMessage(event.replyToken, defMassage);
+        const userId = event.source.userId;
       break;
     case 'message':
       if (event.message.type === 'text') {
         defMassage = { type: 'text', text: event.message.text };
         active = client.replyMessage(event.replyToken, defMassage);
+        db.get('messages').push({
+          ...event.message,
+          token: event.replyToken,
+          source: event.source,
+        }).write();
       }
       break;
     default:
+      active = client.replyMessage(event.replyToken, defMassage);
       break;
   }
 
-  db.get('messages').push({
-    ...event.message,
-    token: event.replyToken,
-    source: event.source,
-  }).write();
-
-  // use reply API
   return active;
 }
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), (req, res) => {
+  db.get('count').push({
+    count: req.body.events.length,
+    timestamp: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+  })
   Promise
     .all(req.body.events.map(handleEvent))
     .then((result) => res.json(result))
@@ -71,6 +75,14 @@ app.post('/callback', line.middleware(config), (req, res) => {
       res.status(500).end();
     });
 });
+
+app.get('users', (req, res) => {
+  res.json(db.get('users'));
+})
+
+app.get('count', (req, res) => {
+  res.json(db.get('count'));
+})
 
 app.get('/messages', (req, res) => {
   res.json(db.get('messages'));
