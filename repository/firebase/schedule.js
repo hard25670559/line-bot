@@ -1,13 +1,13 @@
 const db = require('../../database/firebase');
 const { objectToArray } = require('./util');
 
-const errors = db.ref('errors');
+const schedules = db.ref('schedules');
 
-async function create(error) {
+async function create(schedule) {
   return new Promise((resolve, reject) => {
     try {
-      errors
-        .push(error);
+      schedules
+        .push(schedule);
       resolve(true);
     } catch (err) {
       reject(new Error(err));
@@ -16,7 +16,7 @@ async function create(error) {
 }
 
 async function read() {
-  const result = await errors.get();
+  const result = await schedules.get();
   const tmpData = result.val();
   const data = objectToArray(tmpData);
   return data;

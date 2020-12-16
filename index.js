@@ -22,7 +22,7 @@ app.post('/callback', middleware, async (req, res) => {
   } catch (err) {
     error.create({
       where: 'post/callback.write request',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
@@ -33,7 +33,7 @@ app.post('/callback', middleware, async (req, res) => {
   } catch (err) {
     error.create({
       where: 'post/callback',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
     res.status(500).end();
@@ -60,12 +60,27 @@ app.get('/errors', async (req, res) => {
   const errors = await error.read();
   res.json(errors);
 });
+// app.get('/schedules', async (req, res) => {
+//   const schedules = await schedule
+// })
 app.get('/test', async (req, res) => {
   try {
-    const status = await user.create({ name: 'test' });
-    console.log(status);
+    const users = await user.read();
+    const messageQueue = [];
+    users.forEach(async (userTmp) => {
+      messageQueue.push(sendMessage(userTmp.userId, {
+        type: 'text',
+        text: req.query.message ? req.query.message : '操你媽雞巴',
+      }));
+    });
+    await Promise.all(messageQueue);
   } catch (err) {
-    console.log(err);
+    await error.create({
+      where: 'onFollow',
+      err: err.message,
+      time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+    });
+    console.log('error');
   }
 
   res.sendStatus(200).end();
@@ -76,46 +91,24 @@ app.get('/', (req, res) => {
 });
 
 app.get('/send', async (req, res) => {
+  let code = 200;
   try {
-    sendMessage(req.query.userId
+    await sendMessage(req.query.userId
       ? req.query.userId : 'U6b133b78a90a1731a89e122fcc35d5e5', {
       type: 'text',
       text: req.query.message ? req.query.message : '安安',
     });
-    res.status(200).end();
+    code = 200;
   } catch (err) {
-    error.create({
+    console.log('err', err);
+    await error.create({
       where: 'get/send',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
-    res.status(500).end();
+    code = 500;
   }
-});
-
-app.get('/firebase/test', async (req, res) => {
-  const data = await message.read();
-  res.json(data);
-});
-
-app.get('/firebase', async (req, res) => {
-  console.clear();
-  try {
-    await message.create({
-      text: 'test',
-    });
-    // await fdb.ref('abc').push({
-    //   title: 'todo 1',
-    //   time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-    // });
-
-    // fdb.ref().once('value', (snapshot) => {
-    //   console.log(snapshot.val());
-    // });
-  } catch (err) {
-    console.log(err);
-  }
-  res.status(200).end();
+  res.status(code).end();
 });
 
 // listen on port

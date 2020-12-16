@@ -27,7 +27,7 @@ async function onFollow(event) {
   } catch (err) {
     error.create({
       where: 'onFollow',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
     active = Promise.resolve(null);
@@ -52,7 +52,7 @@ async function onMessage(event) {
   } catch (err) {
     error.create({
       where: 'onMessage',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
     active = Promise.resolve(null);
@@ -79,7 +79,7 @@ async function handleEvent(event) {
     active = Promise.resolve(null);
     error.create({
       where: 'handleEvent',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
@@ -93,7 +93,7 @@ async function sendMessage(userId, messageData) {
   } catch (err) {
     error.create({
       where: 'get/send',
-      err,
+      err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
