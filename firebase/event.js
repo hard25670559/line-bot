@@ -1,12 +1,13 @@
-const db = require('../database/firebase');
+const db = require('../database/index');
 
-const errors = db.ref('error');
+const events = db.get('events');
 
-async function create(error) {
+async function create(event) {
   return new Promise((resolve, reject) => {
     try {
-      errors
-        .push(error);
+      events
+        .push(event)
+        .write();
       resolve(true);
     } catch (err) {
       reject(new Error(err));
@@ -17,15 +18,15 @@ async function create(error) {
 async function read() {
   return new Promise((resolve, reject) => {
     try {
-      resolve(errors);
+      resolve(events);
     } catch (err) {
       reject(new Error(err));
     }
   });
 }
 
-async function update(id, user) {
-  console.log(`update${id}`, user);
+async function update(id, event) {
+  console.log(`update${id}`, event);
   return true;
 }
 

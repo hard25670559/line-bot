@@ -1,6 +1,7 @@
 const line = require('@line/bot-sdk');
 const { format } = require('date-fns');
-const { user, error, message } = require('../repository');
+const { user, error } = require('../repository');
+const { message } = require('../firebase');
 require('dotenv').config();
 
 // const CHANNEL_ID = '1655375708';
