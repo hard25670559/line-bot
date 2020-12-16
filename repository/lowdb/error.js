@@ -1,4 +1,4 @@
-const db = require('../database/index');
+const db = require('../../database/index');
 
 const errors = db.get('errors');
 

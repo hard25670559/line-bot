@@ -1,4 +1,5 @@
-const db = require('../database/firebase');
+const db = require('../../database/firebase');
+const { objectToArray } = require('./util');
 
 const errors = db.ref('error');
 
@@ -15,13 +16,10 @@ async function create(error) {
 }
 
 async function read() {
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(errors);
-    } catch (err) {
-      reject(new Error(err));
-    }
-  });
+  const result = await errors.get();
+  const tmpData = result.val();
+  const data = objectToArray(tmpData);
+  return data;
 }
 
 async function update(id, user) {

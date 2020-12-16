@@ -1,13 +1,13 @@
-const db = require('../database/index');
+const db = require('../../database/firebase');
+const { objectToArray } = require('./util');
 
-const messages = db.get('messages');
+const messages = db.ref('messages');
 
 async function create(message) {
   return new Promise((resolve, reject) => {
     try {
       messages
-        .push(message)
-        .write();
+        .push(message);
       resolve(true);
     } catch (err) {
       reject(new Error(err));
@@ -16,13 +16,10 @@ async function create(message) {
 }
 
 async function read() {
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(messages);
-    } catch (err) {
-      reject(new Error(err));
-    }
-  });
+  const result = await messages.get();
+  const tmpData = result.val();
+  const data = objectToArray(tmpData);
+  return data;
 }
 
 async function update(id, message) {

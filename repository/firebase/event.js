@@ -1,13 +1,13 @@
-const db = require('../database/index');
+const db = require('../../database/firebase');
+const { objectToArray } = require('./util');
 
-const events = db.get('events');
+const events = db.ref('events');
 
 async function create(event) {
   return new Promise((resolve, reject) => {
     try {
       events
-        .push(event)
-        .write();
+        .push(event);
       resolve(true);
     } catch (err) {
       reject(new Error(err));
@@ -16,13 +16,10 @@ async function create(event) {
 }
 
 async function read() {
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(events);
-    } catch (err) {
-      reject(new Error(err));
-    }
-  });
+  const result = await events.get();
+  const tmpData = result.val();
+  const data = objectToArray(tmpData);
+  return data;
 }
 
 async function update(id, event) {

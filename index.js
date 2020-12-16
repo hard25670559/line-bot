@@ -1,8 +1,9 @@
 const express = require('express');
 const { format } = require('date-fns');
-const db = require('./database');
-const { user, error, event } = require('./repository');
-const { message } = require('./firebase');
+const {
+  message, event, error, user,
+} = require('./repository/firebase');
+const firebaseRoot = require('./repository/firebase/data');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
 require('dotenv').config();
 
@@ -39,25 +40,21 @@ app.post('/callback', middleware, async (req, res) => {
   }
 });
 
-app.get('/data', (req, res) => {
-  res.json(db);
+app.get('/data', async (req, res) => {
+  const data = await firebaseRoot.read();
+  res.json(data);
 });
 app.get('/users', async (req, res) => {
   const users = await user.read();
   res.json(users);
 });
-app.get('/messages', (req, res) => {
-  res.json(db.get('messages'));
+app.get('/messages', async (req, res) => {
+  const data = await message.read();
+  res.json(data);
 });
 app.get('/events', async (req, res) => {
   const events = await event.read();
   res.json(events);
-});
-app.get('/count', (req, res) => {
-  res.json(db.get('count'));
-});
-app.get('/resp', (req, res) => {
-  res.json(db.get('resp'));
 });
 app.get('/errors', async (req, res) => {
   const errors = await error.read();
