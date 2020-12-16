@@ -1,18 +1,18 @@
 const express = require('express');
 const { format } = require('date-fns');
-const admin = require('firebase-admin');
-const serviceAccount = require('./hard-xams-line-bot-firebase-adminsdk-g7cfn-d4d2a020d0.json');
+// const admin = require('firebase-admin');
+// const serviceAccount = require('./hard-xams-line-bot-firebase-adminsdk-g7cfn-d4d2a020d0.json');
 const db = require('./database');
 const { user, error } = require('./repository');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
 require('dotenv').config();
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.DATABASE_URL,
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: process.env.DATABASE_URL,
+// });
 
-const fdb = admin.database();
+// const fdb = admin.database();
 // create Express app
 // about Express itself: https://expressjs.com/
 const app = express();
@@ -102,22 +102,22 @@ app.get('/send', async (req, res) => {
   }
 });
 
-app.get('/firebase', async (req, res) => {
-  console.clear();
-  try {
-    await fdb.ref('abc').push({
-      title: 'todo 1',
-      time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-    });
+// app.get('/firebase', async (req, res) => {
+//   console.clear();
+//   try {
+//     await fdb.ref('abc').push({
+//       title: 'todo 1',
+//       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+//     });
 
-    fdb.ref().once('value', (snapshot) => {
-      console.log(snapshot.val());
-    });
-  } catch (err) {
-    console.log(err);
-  }
-  res.sendStatus(200).end();
-});
+//     fdb.ref().once('value', (snapshot) => {
+//       console.log(snapshot.val());
+//     });
+//   } catch (err) {
+//     console.log(err);
+//   }
+//   res.sendStatus(200).end();
+// });
 
 // listen on port
 const port = process.env.PORT || 3000;
