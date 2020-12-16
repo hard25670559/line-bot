@@ -16,13 +16,7 @@ async function create(message) {
 }
 
 async function read() {
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(messages);
-    } catch (err) {
-      reject(new Error(err));
-    }
-  });
+  return messages;
 }
 
 async function update(id, message) {

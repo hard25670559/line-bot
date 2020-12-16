@@ -16,7 +16,13 @@ async function create(error) {
 }
 
 async function read() {
-  return errors;
+  return new Promise((resolve, reject) => {
+    try {
+      resolve(errors);
+    } catch (err) {
+      reject(new Error(err));
+    }
+  });
 }
 
 async function update(id, user) {

@@ -1,12 +1,12 @@
 const db = require('../database/index');
 
-const messages = db.get('messages');
+const events = db.get('events');
 
-async function create(message) {
+async function create(event) {
   return new Promise((resolve, reject) => {
     try {
-      messages
-        .push(message)
+      events
+        .push(event)
         .write();
       resolve(true);
     } catch (err) {
@@ -18,15 +18,15 @@ async function create(message) {
 async function read() {
   return new Promise((resolve, reject) => {
     try {
-      resolve(messages);
+      resolve(events);
     } catch (err) {
       reject(new Error(err));
     }
   });
 }
 
-async function update(id, message) {
-  console.log(`update${id}`, message);
+async function update(id, event) {
+  console.log(`update${id}`, event);
   return true;
 }
 

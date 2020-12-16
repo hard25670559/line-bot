@@ -3,7 +3,7 @@ const { format } = require('date-fns');
 // const admin = require('firebase-admin');
 // const serviceAccount = require('./hard-xams-line-bot-firebase-adminsdk-g7cfn-d4d2a020d0.json');
 const db = require('./database');
-const { user, error } = require('./repository');
+const { user, error, event } = require('./repository');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
 require('dotenv').config();
 
@@ -21,12 +21,10 @@ const app = express();
 // about the middleware, please refer to doc
 app.post('/callback', middleware, async (req, res) => {
   try {
-    db.get('events')
-      .push({
-        headers: req.headers,
-        body: req.body,
-      })
-      .write();
+    event.create({
+      headers: req.headers,
+      body: req.body,
+    });
   } catch (err) {
     error.create({
       where: 'post/callback.write request',
@@ -51,14 +49,16 @@ app.post('/callback', middleware, async (req, res) => {
 app.get('/data', (req, res) => {
   res.json(db);
 });
-app.get('/users', (req, res) => {
-  res.json(db.get('users'));
+app.get('/users', async (req, res) => {
+  const users = await user.read();
+  res.json(users);
 });
 app.get('/messages', (req, res) => {
   res.json(db.get('messages'));
 });
-app.get('/events', (req, res) => {
-  res.json(db.get('events'));
+app.get('/events', async (req, res) => {
+  const events = await event.read();
+  res.json(events);
 });
 app.get('/count', (req, res) => {
   res.json(db.get('count'));
@@ -66,8 +66,9 @@ app.get('/count', (req, res) => {
 app.get('/resp', (req, res) => {
   res.json(db.get('resp'));
 });
-app.get('/errors', (req, res) => {
-  res.json(db.get('errors'));
+app.get('/errors', async (req, res) => {
+  const errors = await error.read();
+  res.json(errors);
 });
 app.get('/test', async (req, res) => {
   try {
