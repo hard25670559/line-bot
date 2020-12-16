@@ -1,5 +1,12 @@
 {
-  "users": [],
+  "users": [
+    {
+      "name": "test"
+    },
+    {
+      "name": "test"
+    }
+  ],
   "messages": [],
   "events": [],
   "count": [],

@@ -11,6 +11,7 @@
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "express": "^4.16.3",
+    "firebase-admin": "^9.4.2",
     "lodash": "^4.17.20",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0"
