@@ -7,8 +7,7 @@ async function create(user) {
   return new Promise((resolve, reject) => {
     try {
       users
-        .push(user)
-        .write();
+        .push(user);
       resolve(true);
     } catch (err) {
       reject(new Error(err));
