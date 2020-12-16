@@ -18,17 +18,3 @@ admin.initializeApp({
 });
 
 module.exports = admin.database();
-
-// credential?: credential.Credential;
-
-// databaseAuthVariableOverride?: object | null;
-
-// databaseURL?: string;
-
-// serviceAccountId?: string;
-
-// storageBucket?: string;
-
-// projectId?: string;
-
-// httpAgent?: Agent;
