@@ -27,11 +27,11 @@ async function shuffleGift() {
   });
 
   const gifts = giftsTmp.map((gift) => {
-    const { ownerGiftNum } = giftsTmp.find((tmp) => gift.to === tmp.owner);
-    console.log('test', ownerGiftNum);
+    const { ownerGift } = giftsTmp.find((tmp) => gift.to === tmp.owner);
+    console.log('test', ownerGift);
     return db.gift.create({
       ...gift,
-      toGift: ownerGiftNum,
+      toGift: ownerGift,
     });
   });
 
