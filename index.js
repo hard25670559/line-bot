@@ -20,12 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // about the middleware, please refer to doc
 app.post('/callback', middleware, async (req, res) => {
   try {
-    event.create({
+    await event.create({
       headers: req.headers,
       body: req.body,
     });
   } catch (err) {
-    error.create({
+    await error.create({
       where: 'post/callback.write request',
       err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
@@ -36,7 +36,7 @@ app.post('/callback', middleware, async (req, res) => {
     const result = await Promise.all(req.body.events.map(handleEvent));
     res.json(result);
   } catch (err) {
-    error.create({
+    await error.create({
       where: 'post/callback',
       err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),

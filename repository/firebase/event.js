@@ -5,13 +5,9 @@ const events = db.ref('events');
 
 async function create(event) {
   return new Promise((resolve, reject) => {
-    try {
-      events
-        .push(event);
-      resolve(true);
-    } catch (err) {
-      reject(new Error(err));
-    }
+    events
+      .push(event);
+    resolve(true);
   });
 }
 
