@@ -99,7 +99,7 @@ app.get('/tel', (req, res) => {
     </html>`);
 });
 
-app.get('/', (req, res) => {
+app.get('/env', (req, res) => {
   res.json(process.env);
 });
 
