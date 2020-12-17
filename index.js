@@ -1,10 +1,11 @@
 const express = require('express');
-const { format } = require('date-fns');
+const { format, addSeconds } = require('date-fns');
 const {
   message, event, error, user,
 } = require('./repository/firebase');
 const firebaseRoot = require('./repository/firebase/data');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
+const { addAlert } = require('./service/schedule');
 require('dotenv').config();
 
 // create Express app
@@ -65,15 +66,7 @@ app.get('/errors', async (req, res) => {
 // })
 app.get('/test', async (req, res) => {
   try {
-    const users = await user.read();
-    const messageQueue = [];
-    users.forEach(async (userTmp) => {
-      messageQueue.push(sendMessage(userTmp.userId, {
-        type: 'text',
-        text: req.query.message ? req.query.message : '操你媽雞巴',
-      }));
-    });
-    await Promise.all(messageQueue);
+    await addAlert('sendAlert', addSeconds(Date.now(), 10));
   } catch (err) {
     await error.create({
       where: 'onFollow',
