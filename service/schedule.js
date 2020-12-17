@@ -10,22 +10,29 @@ function shuffle(users) {
 async function addAlert(name, time) {
   const users = await db.user.read();
   const shuffleUsers = shuffle(users);
+  shuffleUsers.forEach(async (user, index) => {
+    await db.gift.create({
+      giftNum: index,
+      user,
+      time: format(time, 'yyyy-MM-dd HH:mm:ss'),
+    });
+  });
 
   schedule.scheduleJob(name, time, async () => {
     const messageQueue = shuffleUsers
       .map((user, index) => sendMessage(user.userId, {
         type: 'text',
-        text: `安安，您的籤號是${index + 1}號`,
+        text: `你低的禮物號碼是${index + 1}號，你要領取的禮物號碼是${index + 1}`,
       }));
     await Promise.all(messageQueue);
   });
   db.schedule.create({
     name,
-    time: format(time, 'yyyy-MM-dd HH:mm:ss'),
+    createAt: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+    exeAt: format(time, 'yyyy-MM-dd HH:mm:ss'),
   });
 }
 
 module.exports = {
   addAlert,
-  shuffle,
 };
