@@ -1,4 +1,5 @@
 const schedule = require('node-schedule');
+const { format } = require('date-fns');
 const db = require('../repository/firebase');
 const { sendMessage } = require('./line');
 
@@ -20,7 +21,7 @@ async function addAlert(name, time) {
   });
   db.schedule.create({
     name,
-    time,
+    time: format(time, 'yyyy-MM-dd HH:mm:ss'),
   });
 }
 
