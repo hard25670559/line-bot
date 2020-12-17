@@ -20,7 +20,7 @@ async function shuffleGift() {
     const toUserId = userTmpContainer[toIndex];
     userContainer.splice(userContainer.indexOf(toUserId), 1);
     return {
-      ownerGiftNum: index,
+      ownerGift: index,
       owner: user.userId,
       to: toUserId,
     };
@@ -31,7 +31,7 @@ async function shuffleGift() {
     console.log('test', ownerGiftNum);
     return db.gift.create({
       ...gift,
-      toGiftNum: ownerGiftNum,
+      toGift: ownerGiftNum,
     });
   });
 
