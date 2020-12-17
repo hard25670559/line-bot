@@ -90,6 +90,7 @@ app.get('/sendAlert', async (req, res) => {
 
 app.get('/test', async (req, res) => {
   try {
+    await shuffleResult();
     const result = await shuffleResult();
     res.json(result);
   } catch (err) {
@@ -106,8 +107,7 @@ app.get('/test', async (req, res) => {
 app.get('/shuffle', async (req, res) => {
   let code = 200;
   try {
-    const users = await user.read();
-    await shuffleGift(users);
+    await shuffleGift();
   } catch (err) {
     await error.create({
       where: '/shuffle',
