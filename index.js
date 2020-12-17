@@ -105,9 +105,10 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/shuffle', async (req, res) => {
-  let code = 200;
   try {
     await shuffleGift();
+    const result = await shuffleResult();
+    res.json(result);
   } catch (err) {
     await error.create({
       where: '/shuffle',
@@ -115,9 +116,8 @@ app.get('/shuffle', async (req, res) => {
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     });
     console.log('error');
-    code = 500;
+    res.status(500).end();
   }
-  res.status(code).end();
 });
 
 app.get('/tel', (req, res) => {
