@@ -1,5 +1,5 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const { format, addSeconds } = require('date-fns');
 const {
   message, event, error, user, schedule, gift,
@@ -13,8 +13,8 @@ require('dotenv').config();
 // create Express app
 // about Express itself: https://expressjs.com/
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
