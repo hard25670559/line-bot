@@ -5,7 +5,7 @@ const {
 } = require('./repository/firebase');
 const firebaseRoot = require('./repository/firebase/data');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
-const { addAlert } = require('./service/schedule');
+const { addAlert, shuffle } = require('./service/schedule');
 require('dotenv').config();
 
 // create Express app
@@ -66,7 +66,7 @@ app.get('/errors', async (req, res) => {
 // })
 app.get('/test', async (req, res) => {
   try {
-    await addAlert('sendAlert', addSeconds(Date.now(), 10));
+    await addAlert('sendAlert', addSeconds(Date.now(), 5));
   } catch (err) {
     await error.create({
       where: 'onFollow',
@@ -77,6 +77,12 @@ app.get('/test', async (req, res) => {
   }
 
   res.sendStatus(200).end();
+});
+
+app.get('/shuffle', async (req, res) => {
+  const users = await user.read();
+  const shuffleUsers = shuffle(users);
+  res.json(shuffleUsers);
 });
 
 app.get('/', (req, res) => {

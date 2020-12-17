@@ -11,10 +11,11 @@ async function addAlert(name, time) {
   const shuffleUsers = shuffle(users);
 
   schedule.scheduleJob(name, time, async () => {
-    const messageQueue = shuffleUsers.map((user, index) => sendMessage(user.userId, {
-      type: 'text',
-      text: `安安，您的籤號是${index + 1}號`,
-    }));
+    const messageQueue = shuffleUsers
+      .map((user, index) => sendMessage(user.userId, {
+        type: 'text',
+        text: `安安，您的籤號是${index + 1}號`,
+      }));
     await Promise.all(messageQueue);
   });
   db.schedule.create({
@@ -25,4 +26,5 @@ async function addAlert(name, time) {
 
 module.exports = {
   addAlert,
+  shuffle,
 };
