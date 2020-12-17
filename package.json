@@ -4,6 +4,7 @@
   "description": "An example LINE bot just to echo messages",
   "main": "index.js",
   "scripts": {
+    "git:heroku": "git add . && git commit -am 'update' && git push heroku master",
     "start": "node ."
   },
   "dependencies": {
