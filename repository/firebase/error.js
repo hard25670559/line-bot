@@ -5,13 +5,9 @@ const errors = db.ref('errors');
 
 async function create(error) {
   return new Promise((resolve, reject) => {
-    try {
-      errors
-        .push(error);
-      resolve(true);
-    } catch (err) {
-      reject(new Error(err));
-    }
+    errors
+      .push(error);
+    resolve(true);
   });
 }
 

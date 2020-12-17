@@ -25,7 +25,7 @@ async function onFollow(event) {
     const profile = await client.getProfile(userId);
     await user.create(profile);
   } catch (err) {
-    error.create({
+    await error.create({
       where: 'onFollow',
       err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
@@ -43,14 +43,14 @@ async function onMessage(event) {
       replyMessage.text = event.message.text;
     }
     active = await client.replyMessage(event.replyToken, replyMessage);
-    message.create({
+    await message.create({
       ...event.message,
       token: event.replyToken,
       source: event.source,
       time: format(event.timestamp, 'yyyy-MM-dd HH:mm:ss'),
     });
   } catch (err) {
-    error.create({
+    await error.create({
       where: 'onMessage',
       err: err.message,
       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),

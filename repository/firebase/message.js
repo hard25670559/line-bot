@@ -5,13 +5,9 @@ const messages = db.ref('messages');
 
 async function create(message) {
   return new Promise((resolve, reject) => {
-    try {
-      messages
-        .push(message);
-      resolve(true);
-    } catch (err) {
-      reject(new Error(err));
-    }
+    messages
+      .push(message);
+    resolve(true);
   });
 }
 
