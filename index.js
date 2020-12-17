@@ -107,8 +107,7 @@ app.get('/test', async (req, res) => {
 app.get('/shuffle', async (req, res) => {
   try {
     await shuffleGift();
-    const result = await shuffleResult();
-    res.json(result);
+    res.state(200).end();
   } catch (err) {
     await error.create({
       where: '/shuffle',

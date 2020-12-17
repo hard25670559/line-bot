@@ -10,19 +10,19 @@ function getRandom(min, max) {
 
 async function shuffleGift() {
   const users = await db.user.read();
-  const userContainer = users.map((user) => user.fid);
+  const userContainer = users.map((user) => user.userId);
 
   const shuffleUsers = shuffle(users);
   const giftsTmp = shuffleUsers.map((user, index) => {
     const userTmpContainer = userContainer
-      .filter((userTmp) => userTmp !== user.fid);
+      .filter((userTmp) => userTmp !== user.userId);
     const toIndex = getRandom(0, userTmpContainer.length - 1);
-    const toUserFid = userTmpContainer[toIndex];
-    userContainer.splice(userContainer.indexOf(toUserFid), 1);
+    const toUserId = userTmpContainer[toIndex];
+    userContainer.splice(userContainer.indexOf(toUserId), 1);
     return {
       ownerGiftNum: index,
-      owner: user.fid,
-      to: toUserFid,
+      owner: user.userId,
+      to: toUserId,
     };
   });
 
@@ -56,5 +56,4 @@ async function shuffleResult() {
 
 module.exports = {
   shuffleGift,
-  shuffleResult,
 };
