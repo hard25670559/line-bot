@@ -2,31 +2,21 @@ const schedule = require('node-schedule');
 const { format } = require('date-fns');
 const db = require('../repository/firebase');
 const { sendMessage } = require('./line');
+const { giftGiving } = require('./shuffle');
 
-function shuffle(users) {
-  return users.sort(() => Math.random() - 0.5);
-}
-
-async function addAlert(name, time) {
-  const users = await db.user.read();
-  const shuffleUsers = shuffle(users);
-  shuffleUsers.forEach(async (user, index) => {
-    await db.gift.create({
-      giftNum: index,
-      user,
-      time: format(time, 'yyyy-MM-dd HH:mm:ss'),
-    });
-  });
+async function notifyGift(name, time) {
+  await giftGiving();
+  const gifts = await db.gift.read();
 
   schedule.scheduleJob(name, time, async () => {
-    const messageQueue = shuffleUsers
-      .map((user, index) => sendMessage(user.userId, {
+    const messageQueue = gifts
+      .map((gift) => sendMessage(gift.owner, {
         type: 'text',
-        text: `你低的禮物號碼是${index + 1}號，你要領取的禮物號碼是${index + 1}`,
+        text: `你低的禮物號碼是${gift.tag}號，你要領取的禮物號碼是${gift.take}號`,
       }));
     await Promise.all(messageQueue);
   });
-  db.schedule.create({
+  await db.schedule.create({
     name,
     createAt: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
     exeAt: format(time, 'yyyy-MM-dd HH:mm:ss'),
@@ -34,5 +24,5 @@ async function addAlert(name, time) {
 }
 
 module.exports = {
-  addAlert,
+  notifyGift,
 };

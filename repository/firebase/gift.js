@@ -29,9 +29,14 @@ async function del(id) {
   return true;
 }
 
+async function clean() {
+  await gifts.remove();
+}
+
 module.exports = {
   create,
   read,
   update,
   del,
+  clean,
 };

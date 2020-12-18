@@ -4,7 +4,7 @@ const { objectToArray } = require('./util');
 const events = db.ref('events');
 
 async function create(event) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     events
       .push(event);
     resolve(true);

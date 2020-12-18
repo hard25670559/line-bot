@@ -6,8 +6,7 @@ const {
 } = require('./repository/firebase');
 const firebaseRoot = require('./repository/firebase/data');
 const { handleEvent, middleware, sendMessage } = require('./service/line');
-const { addAlert } = require('./service/schedule');
-const { shuffleGift, shuffleResult } = require('./service/shuffle');
+const { notifyGift } = require('./service/schedule');
 require('dotenv').config();
 
 // create Express app
@@ -73,40 +72,25 @@ app.get('/gifts', async (req, res) => {
   const gifts = await gift.read();
   res.json(gifts);
 });
-app.get('/sendAlert', async (req, res) => {
-  try {
-    await addAlert('sendAlert', addSeconds(Date.now(), 5));
-  } catch (err) {
-    await error.create({
-      where: 'onFollow',
-      err: err.message,
-      time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-    });
-    console.log('error');
-  }
 
-  res.sendStatus(200).end();
-});
-
-app.get('/test', async (req, res) => {
-  try {
-    await shuffleResult();
-    const result = await shuffleResult();
-    res.json(result);
-  } catch (err) {
-    await error.create({
-      where: '/test',
-      err: err.message,
-      time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-    });
-    console.log('error');
-    res.status(500).end();
-  }
-});
+// app.get('/test', async (req, res) => {
+//   try {
+//     await giftGiving();
+//     res.json(result);
+//   } catch (err) {
+//     await error.create({
+//       where: '/test',
+//       err: err.message,
+//       time: format(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+//     });
+//     console.log('error');
+//     res.status(500).end();
+//   }
+// });
 
 app.get('/shuffle', async (req, res) => {
   try {
-    await shuffleGift();
+    await notifyGift('齁齁齁齁～', addSeconds(Date.now(), 5));
     res.status(200).end();
   } catch (err) {
     await error.create({
@@ -117,30 +101,6 @@ app.get('/shuffle', async (req, res) => {
     console.log('error');
     res.status(500).end();
   }
-});
-
-app.get('/tel', (req, res) => {
-  res.send(`<!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-  </head>
-  <body>
-    <a href="tel:0425670559">Tel</a>
-    <button onclick="test()">test</button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
-    <script>
-      async function test() {
-        console.log('test')
-        await axios.post('/test?test=1', {
-          time: new Date()
-        })
-      }
-    </script>
-  </body>
-  </html>`);
 });
 
 app.get('/env', (req, res) => {
@@ -169,7 +129,7 @@ app.get('/send', async (req, res) => {
 });
 
 // listen on port
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`listening on http://localhost:${port}`);
 });

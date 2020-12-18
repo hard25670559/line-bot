@@ -5,67 +5,57 @@ function shuffle(users) {
   return users.sort(() => Math.random() - 0.5);
 }
 
+// 取得min ~ max之間的數值，包含min & max
 function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function shuffleGift() {
-  console.clear();
-  const users = await db.user.read();
-  const userContainer = users.map((user) => user.userId);
-  console.log(`--------------------${format(Date.now(), 'yyyy-MM-dd HH:mm:ss')}--------------------`);
-  const shuffleUsers = shuffle(users);
-  const giftsTmp = shuffleUsers.map((user, index) => {
-    console.log('userContainer', userContainer);
-    console.log('----------------------------------------');
-    const userTmpContainer = userContainer
-      .filter((userTmp) => userTmp !== user.userId);
-    console.log('userTmpContainer', userTmpContainer);
-
-    const toIndex = getRandom(0, userTmpContainer.length - 1);
-    const toUserId = userTmpContainer[toIndex];
-    userContainer.splice(userContainer.indexOf(toUserId), 1);
-    return {
-      ownerGift: index,
+// 先將禮物給上編號，並且記錄擁有者是誰
+function giveGiftTag(users) {
+  return shuffle(users)
+    .map((user, index) => ({
       owner: user.userId,
-      to: toUserId,
-    };
-  });
-  console.log('----------------------------------------');
-  console.log('giftsTmp', giftsTmp);
-  console.log('----------------------------------------');
-
-  // "Cannot destructure property 'ownerGift' of 'giftsTmp.find(...)' as it is undefined."
-  const gifts = giftsTmp.map((gift) => {
-    const { ownerGift } = giftsTmp.find((tmp) => gift.to === tmp.owner);
-    return {
-      ...gift,
-      toGift: ownerGift,
-    };
-    // return db.gift.create();
-  });
-
-  console.log(gifts);
-
-  // await Promise.all(gifts);
+      tag: index,
+    }));
 }
 
-async function shuffleResult() {
-  const gifts = await db.gift.read();
-  const users = await db.user.read();
-  const result = gifts.map((gift) => {
-    const toUser = users.find((user) => user.fid === gift.to);
-    const fromUser = users.find((user) => user.fid === gift.owner);
+function shuffleGift(gifts) {
+  const giftTags = gifts.map((gift) => gift.tag);
+  const usedTags = [];
+  return gifts.map((gift) => {
+    const tags = giftTags
+      // 排除已被挑選的禮物
+      .filter((tag) => !usedTags.includes(tag))
+      // 排除自己的禮物
+      .filter((tag) => tag !== gift.tag);
+
+    const tag = tags[getRandom(0, tags.length - 1)];
+    usedTags.push(tag);
     return {
-      to: toUser,
-      from: fromUser,
-      ownerGiftNum: gift.ownerGiftNum,
-      toGiftNum: gift.toGiftNum,
+      ...gift,
+      take: tag,
     };
   });
-  return result;
+}
+
+// 決定參加者要拿哪一個編號的禮物
+async function giftGiving() {
+  await db.gift.clean();
+  const users = await db.user.read();
+  const gifts = giveGiftTag(users);
+  let result = [];
+  do {
+    result = shuffleGift(gifts);
+  } while (!result[result.length - 1].take);
+
+  console.clear();
+  console.log(`-----------------------------${format(Date.now(), 'yyyy-MM-dd HH:mm:ss')}-----------------------------`);
+  console.log(result);
+
+  const task = result.map((data) => db.gift.create(data));
+  await Promise.all(task);
 }
 
 module.exports = {
-  shuffleGift,
+  giftGiving,
 };
