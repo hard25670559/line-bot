@@ -12,7 +12,7 @@ async function notifyGift(name, time) {
     const messageQueue = gifts
       .map((gift) => sendMessage(gift.owner, {
         type: 'text',
-        text: `你低的禮物號碼是${gift.tag}號，你要領取的禮物號碼是${gift.take}號`,
+        text: `你低的禮物號碼是${gift.tag + 1}號，你要領取的禮物號碼是${gift.take + 1}號`,
       }));
     await Promise.all(messageQueue);
   });
